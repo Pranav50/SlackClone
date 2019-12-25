@@ -5,16 +5,6 @@ import {Link} from 'react-router-dom'
 import md5 from 'md5'
 
 class Register extends Component {
-    constructor(props){
-        super(props);
-        this.state = {
-          type: 'input',
-          score: 'null'
-        }
-        this.showHide = this.showHide.bind(this);
-        this.passwordStrength = this.passwordStrength.bind(this);
-      }
-
     state = {
         username: "",
         email: "",
@@ -25,28 +15,9 @@ class Register extends Component {
         usersRef: firebase.database().ref('users')
     };
 
-    showHide(e){
-        e.preventDefault();
-        e.stopPropagation();
-        this.setState({
-          type: this.state.type === 'input' ? 'password' : 'input'
-        })  
-      }
-      
-      passwordStrength(e){
-        if(e.target.value === ''){
-          this.setState({
-            score: 'null'
-          })
-        }
-        else{
-          var pw = e.target.value;
-          this.setState({
-            score: pw.score
-          });      
-        }
-    
-      }
+    handleChange = event => {
+        this.setState({ [event.target.name]: event.target.value });
+    }
 
     isFormValid = () => {
         let errors = [];
@@ -69,7 +40,7 @@ class Register extends Component {
         }  else {
             return true;
         }    
-    } 
+    }
 
     isFormEmpty = ({ username, email, password, passwordConfirmation }) => {
         return !username.length || !email.length || !password.length ||
@@ -93,7 +64,6 @@ class Register extends Component {
     }
 
     displayErrors = errors => errors.map((error, i) => <p key={i}>{error.message}</p>);
-
 
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
@@ -131,7 +101,7 @@ class Register extends Component {
                 
             })
             .catch(err => {
-                console.log(err)
+                console.error(err)
                 this.setState({ errors: this.state.errors.concat(err) ,loading: false});
             })
 
@@ -139,11 +109,11 @@ class Register extends Component {
     } 
 
     handleInputError = (errors, inputName) => {
-       return errors.some(error => error.message.toLowerCase().includes(inputName)) ? 'error' : ''
-    }
+        return errors.some(error => error.message.toLowerCase().includes(inputName)) ? 'error' : ''
+     }
 
     render() {
-        const { username, email, password, passwordConfirmation, errors, loading} = this.state;
+         const { username, email, password, passwordConfirmation, errors, loading} = this.state;
 
         const messageStyle = {
             boxShadow: "0 13px 10px -6px #888888"
@@ -164,7 +134,7 @@ class Register extends Component {
                             <Icon name="slack hash" color="teal"/>
                             Register for Slack Chat Clone
                         </Header>
-                        <Form onSubmit={this.handleSubmit} size="large" className="box effect5">
+                        <Form onSubmit={this.handleSubmit} size="large" className="box effect2">
                             <Segment>
                                 <Form.Input fluid name="username" icon="user" iconPosition="left"
                                 placeholder="Username" onChange={this.handleChange} type="text"
@@ -174,21 +144,12 @@ class Register extends Component {
                                 placeholder="Email  Address" onChange={this.handleChange} 
                                 value={email} type="email"
                                 className={this.handleInputError(errors, 'email')}/>
-                            
+                                
                                 <Form.Input fluid name="password" icon="lock" iconPosition="left"
                                 placeholder="Password" onChange={this.handleChange} type="password"
-                                value={password}
-                                className={this.handleInputError(errors, 'password')}
+                                value={password} className="password__input"  
+                                className={this.handleInputError(errors, 'password')}/>
 
-                                type={this.state.type} className="password__input" 
-                                onChange={this.passwordStrength}/>
-                                <span 
-                                    className="password__show" 
-                                    onClick={this.showHide}>
-                                    {this.state.type === 'input' ? 'Hide' : 'Show'}
-                                </span>
-                                <span className="password__strength" data-score={this.state.score} />
-                                
                                 <Form.Input fluid name="passwordConfirmation" icon="repeat" iconPosition="left"
                                 placeholder="Password Confirmation" onChange={this.handleChange} type="password"
                                 value={passwordConfirmation}
@@ -199,7 +160,7 @@ class Register extends Component {
                                 </Segment>
                         </Form>
                         
-                        <Message style={messageStyle}>Already a User? <Link to="/login">Login</Link></Message>
+                        <Message style={messageStyle}>Already have an account? <Link to="/login">Login</Link></Message>
                         </Grid.Column>
                 </Grid>
             </div>
